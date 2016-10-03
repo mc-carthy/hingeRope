@@ -37,6 +37,11 @@ public class Hook : MonoBehaviour {
 			}
 		} else if (!isHookLanded) {
 			isHookLanded = true;
+
+			while (Vector2.Distance (player.transform.position, lastNode.transform.position) > nodeDis) {
+				CreateNode ();
+			}
+
 			lastNode.GetComponent<HingeJoint2D> ().connectedBody = player.GetComponent<Rigidbody2D> ();
 		}
 		RenderLine ();
