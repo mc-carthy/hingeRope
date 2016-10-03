@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Hook : MonoBehaviour {
 
@@ -11,14 +12,20 @@ public class Hook : MonoBehaviour {
 	[SerializeField]
 	private Player player;
 	[SerializeField]
+	private LineRenderer linRen;
+	[SerializeField]
 	private float hookSpeed = 10;
 	[SerializeField]
 	private float nodeDis = 2;
 	private bool isHookLanded = false;
+	private List<GameObject> nodes = new List<GameObject>();
+	private int vertexCount = 2;
 
 	private void Start () {
+		linRen = GetComponent<LineRenderer> ();
 		player = GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ();
 		lastNode = transform.gameObject;
+		nodes.Add (transform.gameObject);
 	}
 
 	private void Update () {
@@ -32,6 +39,7 @@ public class Hook : MonoBehaviour {
 			isHookLanded = true;
 			lastNode.GetComponent<HingeJoint2D> ().connectedBody = player.GetComponent<Rigidbody2D> ();
 		}
+		RenderLine ();
 	}
 
 	private void CreateNode () {
@@ -47,6 +55,17 @@ public class Hook : MonoBehaviour {
 		lastNode.GetComponent<HingeJoint2D> ().connectedBody = newNode.GetComponent<Rigidbody2D> ();
 
 		lastNode = newNode;
+		nodes.Add (lastNode);
+		vertexCount++;
 	}
 
+	private void RenderLine () {
+		linRen.SetVertexCount (vertexCount);
+
+		for (int i = 0; i < nodes.Count; i++) {
+			linRen.SetPosition (i, nodes [i].transform.position);
+		}
+
+		linRen.SetPosition (nodes.Count, player.transform.position);
+	}
 }
